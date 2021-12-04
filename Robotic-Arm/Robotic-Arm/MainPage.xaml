@@ -29,7 +29,10 @@
         <Button Text="Click to Rotate Text!"
                 VerticalOptions="CenterAndExpand"
                 HorizontalOptions="Center"
-                Clicked="OnButtonClicked" />
+                Clicked="OnButtonClicked" 
+                BackgroundColor="SpringGreen"
+                TextColor="Red"/>
+        <!-- BorderColor="OrangeRed"/> -->
         
     </StackLayout>
 
