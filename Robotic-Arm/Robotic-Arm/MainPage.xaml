@@ -26,12 +26,42 @@
                VerticalOptions="Start"
                HorizontalOptions="CenterAndExpand" />
 
-        <Button Text="Click to Rotate Text!"
+        <Button Text="scan for bluetooth"
                 VerticalOptions="CenterAndExpand"
                 HorizontalOptions="Center"
-                Clicked="OnButtonClicked" 
+                Clicked="BTscan" 
                 BackgroundColor="SpringGreen"
                 TextColor="Red"/>
+        
+        
+        <Button Text="check bt status"
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="Center"
+                Clicked="CheckStatus" 
+                BackgroundColor="SpringGreen"
+                TextColor="Red"/>
+
+        <Button Text="bt connect"
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="Center"
+                Clicked="BTConnect" 
+                BackgroundColor="SpringGreen"
+                TextColor="Red"/>
+
+        <Button Text="bt connect known dev"
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="Center"
+                Clicked="BTConnectKnown" 
+                BackgroundColor="SpringGreen"
+                TextColor="Red"/>
+
+        <Button Text="bt get services and charac"
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="Center"
+                Clicked="BTservices" 
+                BackgroundColor="SpringGreen"
+                TextColor="Red"/>
+
         <!-- BorderColor="OrangeRed"/> -->
         
     </StackLayout>

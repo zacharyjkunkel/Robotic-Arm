@@ -6,11 +6,12 @@ namespace Robotic_Arm
 {
     public partial class App : Application
     {
+        BTController btcon;
         public App()
         {
             InitializeComponent();
-
-            MainPage = new MainPage();
+            btcon = new BTController();
+            MainPage = new MainPage(btcon);
         }
 
         protected override void OnStart()
@@ -24,5 +25,6 @@ namespace Robotic_Arm
         protected override void OnResume()
         {
         }
+
     }
 }
