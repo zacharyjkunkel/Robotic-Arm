@@ -32,8 +32,8 @@
                 Clicked="BTscan" 
                 BackgroundColor="SpringGreen"
                 TextColor="Red"/>
-        
-        
+
+
         <Button Text="check bt status"
                 VerticalOptions="CenterAndExpand"
                 HorizontalOptions="Center"
@@ -41,24 +41,18 @@
                 BackgroundColor="SpringGreen"
                 TextColor="Red"/>
 
-        <Button Text="bt connect"
-                VerticalOptions="CenterAndExpand"
-                HorizontalOptions="Center"
-                Clicked="BTConnect" 
-                BackgroundColor="SpringGreen"
-                TextColor="Red"/>
-
-        <Button Text="bt connect known dev"
-                VerticalOptions="CenterAndExpand"
-                HorizontalOptions="Center"
-                Clicked="BTConnectKnown" 
-                BackgroundColor="SpringGreen"
-                TextColor="Red"/>
 
         <Button Text="bt get services and charac"
                 VerticalOptions="CenterAndExpand"
                 HorizontalOptions="Center"
                 Clicked="BTservices" 
+                BackgroundColor="SpringGreen"
+                TextColor="Red"/>
+
+        <Button Text="send test data over bt"
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="Center"
+                Clicked="SendData" 
                 BackgroundColor="SpringGreen"
                 TextColor="Red"/>
 

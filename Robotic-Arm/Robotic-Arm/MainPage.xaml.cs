@@ -32,6 +32,12 @@ namespace Robotic_Arm
         //scans for bt devices
         async void BTscan(object sender, EventArgs args)
         {
+            if (btcon.adapter.IsScanning)
+            {
+                return;
+            }
+
+
             btcon.adapter.ScanMode = Plugin.BLE.Abstractions.Contracts.ScanMode.Balanced;
             btcon.adapter.ScanTimeout = 3000;
 
@@ -45,16 +51,19 @@ namespace Robotic_Arm
             btcon.adapter.DeviceDiscovered += (s, e) =>
             {
                 //  Debug.WriteLine(e.Device);
-                btcon.deviceList.Add(e.Device);
-                Debug.WriteLine("Device list: " + e.Device);
+                if (e.Device.ToString() != "")
+                {
+                    btcon.deviceList.Add(e.Device);
+                }
+                Debug.WriteLine("Device list: " + e.Device); 
+                Debug.WriteLine("Device NAME: " + e.Device.Name);
+
             };
 
             btcon.adapter.DeviceAdvertised += (s, e) =>
             {
                 Debug.WriteLine("Device advertised: " + e.Device);
-            };
-
-
+            };  
 
             //add already known devices
             Debug.WriteLine("SIZE OF TISWEHTNOBH: " + btcon.adapter.GetSystemConnectedOrPairedDevices().Count()); ;
@@ -63,9 +72,6 @@ namespace Robotic_Arm
                 Debug.WriteLine("NEWDEVICE " + newDev);
                 btcon.deviceList.Add(newDev);
             }
-
-
-
 
             //scan for devices
             if (!btcon.adapter.IsScanning)
@@ -81,6 +87,7 @@ namespace Robotic_Arm
 
         }
 
+        //checks if bluetooth is on
         async void CheckStatus(object sender, EventArgs args)
         {
             var state = btcon.ble.State;
@@ -88,39 +95,7 @@ namespace Robotic_Arm
 
         }
 
-        async void BTConnect(object sender, EventArgs args)
-        {
-            try
-            {
-                if (btcon.btDev != null)
-                {
-                    await btcon.adapter.ConnectToDeviceAsync(btcon.btDev);
-                }
-                else
-                {
-                    await DisplayAlert("no device selected", "e", "e");
-                }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("cannot connect to device", "e","e");
-            }
-
-        }
-
-        async void BTConnectKnown(object sender, EventArgs args)
-        {
-            try
-            {
-                await btcon.adapter.ConnectToKnownDeviceAsync(new Guid("guidd"));
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("cannot connect to device", "e", "e");
-            }
-
-        }
-
+        //setup bt characteristics
         async void BTservices(object sender, EventArgs args)
         {
             btcon.services = await btcon.btDev.GetServicesAsync();
@@ -128,78 +103,17 @@ namespace Robotic_Arm
             //characteristics = await services[0].GetCharacteristicsAsync();
             btcon.characteristics = await btcon.service.GetCharacteristicsAsync();
             //characteristic = characteristics[0];
-            btcon.characteristic = await btcon.service.GetCharacteristicAsync(Guid.Parse("guidd")); //Btdev.Id
+            btcon.characteristic = await btcon.service.GetCharacteristicAsync(btcon.btDev.Id); //Guid.Parse("guidd")
 
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-        /*void Adapter_DeviceDiscovered(object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs e)
+        //sends over test data
+        async void SendData(object sender, EventArgs args)
         {
-            DeviceList.Add(e.Device);
-        }
-        void Adapter_DeviceConnected(object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs e)
-        {
-            Debug.WriteLine("Device already connected");
+            byte[] data = { 0x01, 0x00 };
+            await btcon.characteristic.WriteAsync(data);
+
         }
 
-        void Adapter_DeviceDisconnected(object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs e)
-        {
-            //DeviceDisconnectedEvent?.Invoke(sender,e);
-            Debug.WriteLine("Device already disconnected");
-        }
-
-        void Adapter_ScanTimeoutElapsed(object sender, EventArgs e)
-        {
-            adapter.StopScanningForDevicesAsync();
-            Debug.WriteLine("Timeout", "Bluetooth scan timeout elapsed");
-        }*/
-
-
-        /*
-        var state = ble.State;
-        Debug.WriteLine("STATE: " + state);
-
-
-        adapter.DeviceDiscovered += Adapter_DeviceDiscovered;
-        adapter.DeviceConnected += Adapter_DeviceConnected;
-        adapter.DeviceDisconnected += Adapter_DeviceDisconnected;
-        adapter.ScanTimeoutElapsed += Adapter_ScanTimeoutElapsed;
-
-
-        adapter.ScanMode = Plugin.BLE.Abstractions.Contracts.ScanMode.Balanced;
-        await adapter.StartScanningForDevicesAsync();
-
-
-
-
-        state = ble.State;
-        Debug.WriteLine("STATE: " + state);
-        Debug.WriteLine("connected devices?? " + adapter.ConnectedDevices);
-
-
-
-
-
-
-
-        var services = await Btdev.GetServicesAsync();
-        var characteristics = await services[0].GetCharacteristicsAsync();
-        var characteristic = characteristics[0];
-
-        Debug.WriteLine(await characteristic.ReadAsync());
-
-
-        */
     }
 }

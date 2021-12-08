@@ -39,6 +39,8 @@ namespace Robotic_Arm
         }
 
 
+
+        //when a device is selected, connect to it
         async void SelectedDevice(object sender, Xamarin.Forms.ItemTappedEventArgs e)
         {
             Debug.WriteLine("YOU PICKED: " + e.Item.ToString());
@@ -51,6 +53,7 @@ namespace Robotic_Arm
                 {
                     await btcon.adapter.ConnectToDeviceAsync(device);
                     await Navigation.PopAsync();
+                    await DisplayAlert("Bluetooth", "Connected to: " + device, "THANK YOU");
                 }
                 else
                 {
@@ -69,12 +72,13 @@ namespace Robotic_Arm
 
 
 
-
+        //supposed to prevent app from closing when pressing the hardware back button, doesnt seem to work
         protected override bool OnBackButtonPressed()
         {
+            //Navigation.PopAsync();
             App.Current.MainPage = new MainPage(btcon);
-            //return base.OnBackButtonPressed();
-            return false;
+            return base.OnBackButtonPressed();
+            //return true;
         }
     }
 }

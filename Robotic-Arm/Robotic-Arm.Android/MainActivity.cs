@@ -42,6 +42,7 @@ namespace Robotic_Arm.Droid
             Manifest.Permission.AccessCoarseLocation,
             Manifest.Permission.AccessFineLocation
         };
+
         //https://stackoverflow.com/questions/50509591/plugin-ble-for-xamarin-forms-not-detecting-devices
         private void CheckPermissions()
         {

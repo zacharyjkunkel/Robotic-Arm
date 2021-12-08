@@ -6,11 +6,12 @@
 
     <ContentPage.Content>
         <ListView x:Name="lvdev"
-            BackgroundColor="Orange"
-            HorizontalOptions="FillAndExpand"
+            BackgroundColor="#303030"
+            SeparatorColor="#808080"
+            HorizontalOptions="CenterAndExpand"
             ItemTapped="SelectedDevice"
             ItemsSource="{Binding deviceList}"
-            VerticalOptions="FillAndExpand">
+            VerticalOptions="CenterAndExpand">
         </ListView>
     </ContentPage.Content>
 </ContentPage>
