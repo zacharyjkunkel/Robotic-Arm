@@ -65,6 +65,21 @@ namespace Robotic_Arm
                 await DisplayAlert("Error", "Could not connect to :" + ex.DeviceId, "OK");
             }
 
+            //set up services and characteristics
+            btcon.services = await btcon.btDev.GetServicesAsync();
+            btcon.service = await btcon.btDev.GetServiceAsync(btcon.services[2].Id);
+            //IService servi = await btcon.btDev.GetServiceAsync(btcon.btDev.Id);
+            //characteristics = await services[0].GetCharacteristicsAsync();
+            btcon.characteristics = await btcon.service.GetCharacteristicsAsync();
+            //characteristic = characteristics[0];
+            btcon.characteristic = await btcon.service.GetCharacteristicAsync(btcon.characteristics[0].Id); //Guid.Parse("guidd")  btcon.btDev.Id
+
+            btcon.characteristicTX = btcon.characteristics[1];
+            btcon.characteristicRX = btcon.characteristics[0];
+
+
+            Debug.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEE");
+            Debug.WriteLine(btcon.btDev.Id.ToString());
 
             App.Current.MainPage = new MainPage(btcon);
         }

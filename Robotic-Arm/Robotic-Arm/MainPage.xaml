@@ -34,18 +34,18 @@
                 TextColor="Red"/>
 
 
-        <Button Text="check bt status"
+        <Button Text="connect to esp32"
                 VerticalOptions="CenterAndExpand"
                 HorizontalOptions="Center"
-                Clicked="CheckStatus" 
+                Clicked="ConnectToESP32" 
                 BackgroundColor="SpringGreen"
                 TextColor="Red"/>
 
 
-        <Button Text="bt get services and charac"
+        <Button Text="continually read test data"
                 VerticalOptions="CenterAndExpand"
                 HorizontalOptions="Center"
-                Clicked="BTservices" 
+                Clicked="ReadData" 
                 BackgroundColor="SpringGreen"
                 TextColor="Red"/>
 

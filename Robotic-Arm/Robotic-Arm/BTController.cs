@@ -5,6 +5,7 @@ using System.Text;
 using Plugin.BLE;
 using Plugin.BLE.Abstractions.Contracts;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace Robotic_Arm
 {
@@ -23,7 +24,8 @@ namespace Robotic_Arm
         public IReadOnlyList<ICharacteristic> characteristics;
         public ICharacteristic characteristic;
 
-
+        public ICharacteristic characteristicRX;
+        public ICharacteristic characteristicTX;
 
         public BTController()
         {
@@ -32,9 +34,7 @@ namespace Robotic_Arm
             deviceList = new ObservableCollection<IDevice>();
         }
 
-
-
-
+ 
 
     }
 }

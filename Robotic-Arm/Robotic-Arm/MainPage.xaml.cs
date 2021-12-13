@@ -9,7 +9,9 @@ using Xamarin.Forms;
 
 using Plugin.BLE;
 using Plugin.BLE.Abstractions.Contracts;
+using Plugin.BLE.Abstractions.Exceptions;
 using System.Diagnostics;
+
 
 namespace Robotic_Arm
 {
@@ -18,6 +20,7 @@ namespace Robotic_Arm
 
 
         BTController btcon;
+        ICharacteristic chara;
 
 
 
@@ -39,7 +42,7 @@ namespace Robotic_Arm
 
 
             btcon.adapter.ScanMode = Plugin.BLE.Abstractions.Contracts.ScanMode.Balanced;
-            btcon.adapter.ScanTimeout = 3000;
+            btcon.adapter.ScanTimeout = 1000;
 
             btcon.deviceList.Clear();
             btcon.adapter.DeviceDisconnected += (s, e) =>
@@ -51,7 +54,7 @@ namespace Robotic_Arm
             btcon.adapter.DeviceDiscovered += (s, e) =>
             {
                 //  Debug.WriteLine(e.Device);
-                if (e.Device.ToString() != "")
+                if (e.Device.Name != "")
                 {
                     btcon.deviceList.Add(e.Device);
                 }
@@ -73,6 +76,12 @@ namespace Robotic_Arm
                 btcon.deviceList.Add(newDev);
             }
 
+            foreach (IDevice newDev in btcon.adapter.ConnectedDevices)
+            {
+                Debug.WriteLine("NEWDEVICE " + newDev);
+                btcon.deviceList.Add(newDev);
+            }
+
             //scan for devices
             if (!btcon.adapter.IsScanning)
             {
@@ -80,7 +89,7 @@ namespace Robotic_Arm
             }
 
 
-            await label.RelRotateTo(360, 3000);
+            //await label.RelRotateTo(360, 3000);
 
             App.Current.MainPage = new NavigationPage(new DeviceSelection(btcon));
             //Navigation.PushAsync(new DeviceSelection(DeviceList));
@@ -88,32 +97,105 @@ namespace Robotic_Arm
         }
 
         //checks if bluetooth is on
-        async void CheckStatus(object sender, EventArgs args)
-        {
-            var state = btcon.ble.State;
-            await this.DisplayAlert("title", state.ToString(), "yes thanks");
+        //var state = btcon.ble.State;
+        //await this.DisplayAlert("title", state.ToString(), "yes thanks");
 
-        }
 
-        //setup bt characteristics
-        async void BTservices(object sender, EventArgs args)
+        //connect to device faster
+        async void ConnectToESP32(object sender, EventArgs args)
         {
-            btcon.services = await btcon.btDev.GetServicesAsync();
-            btcon.service = await btcon.btDev.GetServiceAsync(btcon.btDev.Id);
+
+            await btcon.adapter.ConnectToKnownDeviceAsync(new Guid("00000000-0000-0000-0000-58bf25177936"));
+
+            //set up services and characteristics
+            btcon.services = await btcon.adapter.ConnectedDevices[0].GetServicesAsync();
+            btcon.service = await btcon.adapter.ConnectedDevices[0].GetServiceAsync(btcon.services[2].Id);
+            //IService servi = await btcon.btDev.GetServiceAsync(btcon.btDev.Id);
             //characteristics = await services[0].GetCharacteristicsAsync();
             btcon.characteristics = await btcon.service.GetCharacteristicsAsync();
             //characteristic = characteristics[0];
-            btcon.characteristic = await btcon.service.GetCharacteristicAsync(btcon.btDev.Id); //Guid.Parse("guidd")
+            btcon.characteristic = await btcon.service.GetCharacteristicAsync(btcon.characteristics[0].Id); //Guid.Parse("guidd")  btcon.btDev.Id
 
+            btcon.characteristicTX = btcon.characteristics[1];
+            btcon.characteristicRX = btcon.characteristics[0];
         }
+
+
+
+        //constantly read input
+        async void ReadData(object sender, EventArgs args)
+        {
+            byte[] test = await btcon.characteristics[0].ReadAsync();
+            byte[] prevTest = test;
+            //Debug.WriteLine("Received: " + Encoding.Default.GetString(test));
+
+            btcon.characteristicRX.ValueUpdated += (s, e) =>
+            {
+                Debug.WriteLine("Received: " + Encoding.Default.GetString(e.Characteristic.Value));
+            };
+            await btcon.characteristicRX.StartUpdatesAsync();
+
+            /*while (true)
+            {
+                try
+                {
+                    test = await btcon.characteristics[0].ReadAsync();
+                    if (test != prevTest)
+                    {
+                        Debug.WriteLine("Received: " + Encoding.Default.GetString(test));
+                    }
+                    await Task.Delay(1000);
+                }
+                catch (CharacteristicReadException ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
+            }*/
+        }
+
+        private void CharacteristicRX_ValueUpdated(object sender, Plugin.BLE.Abstractions.EventArgs.CharacteristicUpdatedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
 
         //sends over test data
         async void SendData(object sender, EventArgs args)
         {
-            byte[] data = { 0x01, 0x00 };
-            await btcon.characteristic.WriteAsync(data);
+            //byte[] data = { 0x01 };
+            byte[] data = Encoding.ASCII.GetBytes("OINK");
+
+            try
+            {
+                await btcon.characteristicTX.WriteAsync(data);
+                //await chara.WriteAsync(data);
+
+                Debug.WriteLine("Sent: " + "OINK");
+            } 
+            catch(CharacteristicReadException ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+            while (true)
+            {
+                try
+                {
+                    await btcon.characteristicTX.WriteAsync(data);
+                    //await chara.WriteAsync(data);
+                    
+                    Debug.WriteLine("Sent: " + "OINK");
+                }
+                catch (CharacteristicReadException ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
+                await Task.Delay(4100);
+            }
 
         }
+
+
 
     }
 }
