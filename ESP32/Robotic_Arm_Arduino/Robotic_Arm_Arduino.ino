@@ -2,8 +2,8 @@
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
-#include <BLE2902.h>
-#include "BluetoothSerial.h"
+//#include <BLE2902.h>
+//#include "BluetoothSerial.h"
 
 //#define servoPWM 12
 #define turn0 15
@@ -26,6 +26,9 @@ const int pwmFreq = 400;
 const int pwmRes = 8;
 const int pwmChan = 0;
 
+int servoAPosition = 50;
+int prevServoAPosition = 50;
+
 
 
 //BluetoothSerial espBT;
@@ -47,14 +50,19 @@ class RecvCallbacks: public BLECharacteristicCallbacks {
         
         //print what recv from mobile app
         Serial.print("Received: ");
-        for (int i = 0; i < recv.length(); i++) {
-          Serial.print(recv[i]);
-        }
-        Serial.println();
+        //for (int i = 0; i < recv.length(); i++) {
+        //  Serial.print(recv[i]);
+        //}
+        Serial.println(recv.c_str());
+        //Serial.println();
 
         //check for what inputs we receive
-        if (recv.find("A") == true) {
-          Serial.println("ROTATING MOTOR (PRETEND)");
+        if (recv.find("A") != -1) {
+          
+          //int servoTo = atoi(recv.erase(0).c_str());
+          //Serial.print("Rotating servo to: ");
+          //Serial.println(recv.substr(1, recv.length()).c_str());
+          servoAPosition = atoi(recv.substr(1, recv.length()).c_str());
         }
       
       }
@@ -65,10 +73,13 @@ class RecvCallbacks: public BLECharacteristicCallbacks {
 class ServerConnectionCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
       deviceConnected = true;
+      Serial.println("Device Connected");
     };
 
     void onDisconnect(BLEServer* pServer) {
       deviceConnected = false;
+      Serial.println("Device disconnected");
+      pServer->getAdvertising()->start();
     }
 };
 
@@ -94,7 +105,7 @@ void setup() {
                                          //BLECharacteristic::PROPERTY_WRITE |
                                          BLECharacteristic::PROPERTY_READ
                                        );
-  pCharacteristic->addDescriptor(new BLE2902());
+  //pCharacteristic->addDescriptor(new BLE2902());
 
   pCharacteristicRX = pService->createCharacteristic(
                                          CHARACTERISTIC_UUID_RX,
@@ -117,24 +128,33 @@ void loop() {
   if (deviceConnected) {
 
     // Let's convert the value to a char array:
-    char txString[8]; 
-    dtostrf(txValue, 1, 2, txString); // float_val, min_width, digits_after_decimal, char_buffer
+    //char txString[8]; 
+    //dtostrf(txValue, 1, 2, txString); // float_val, min_width, digits_after_decimal, char_buffer
     
 //    pCharacteristic->setValue(&txValue, 1); // To send the integer value
 //    pCharacteristic->setValue("Hello!"); // Sending a test message
-    pCharacteristic->setValue(txString);
+    //pCharacteristic->setValue(txString);
     
-    pCharacteristic->notify();
-    Serial.print("Sent: ");
-    Serial.println(txString);
+    //pCharacteristic->notify();
+    //Serial.print("Sent: ");
+    //Serial.println(txString);
+
+    if (prevServoAPosition != servoAPosition){
+      ledcWrite(pwmChan, servoAPosition);
+    }
+    
+    //delay(15);
+
 
   } else {
-    Serial.println("Device disconnected. . . ");
+    Serial.println("Device not connected. . . ");
     delay(4000);
   }
 
-  delay(1000);
-  txValue++;
+  delay(15);
+  //txValue++;
+
+
   /*if(turn0 == HIGH){
     ledcWrite(pwmChan, 50);
   } else if(turn1 == HIGH){

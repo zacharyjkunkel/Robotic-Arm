@@ -197,5 +197,50 @@ namespace Robotic_Arm
 
 
 
+
+        bool sendTimeOut = false;
+
+        void MoveServo(object sender, ValueChangedEventArgs args)
+        {
+            //keeps the program from sending too many values
+            if (sendTimeOut)
+            {
+                return;
+            }
+
+            if (sender == ServoA)
+            {
+                UpdateServo(Convert.ToInt32(args.NewValue), "A");
+            }
+
+        }
+        //void MoveServoComplete(object sender, DragEventArgs args) { }
+
+        async void UpdateServo(int position, string servo)
+        {
+            sendTimeOut = true;
+
+
+            byte[] data = Encoding.ASCII.GetBytes(servo + position.ToString());
+
+            //Encoding.Default.GetBytes
+            //byte[] data = BitConverter.GetBytes(position);
+
+            try
+            {
+                await btcon.characteristicTX.WriteAsync(data);
+
+                Debug.WriteLine("Sent: " + position);
+            }
+            catch (CharacteristicReadException ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+            await Task.Delay(15);
+            sendTimeOut = false;
+
+        }
+
     }
 }

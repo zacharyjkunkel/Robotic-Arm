@@ -27,7 +27,7 @@
                HorizontalOptions="CenterAndExpand" />
 
         <Button Text="scan for bluetooth"
-                VerticalOptions="CenterAndExpand"
+                VerticalOptions="Center"
                 HorizontalOptions="Center"
                 Clicked="BTscan" 
                 BackgroundColor="SpringGreen"
@@ -35,7 +35,7 @@
 
 
         <Button Text="connect to esp32"
-                VerticalOptions="CenterAndExpand"
+                VerticalOptions="Center"
                 HorizontalOptions="Center"
                 Clicked="ConnectToESP32" 
                 BackgroundColor="SpringGreen"
@@ -43,18 +43,26 @@
 
 
         <Button Text="continually read test data"
-                VerticalOptions="CenterAndExpand"
+                VerticalOptions="Center"
                 HorizontalOptions="Center"
                 Clicked="ReadData" 
                 BackgroundColor="SpringGreen"
                 TextColor="Red"/>
 
         <Button Text="send test data over bt"
-                VerticalOptions="CenterAndExpand"
+                VerticalOptions="Center"
                 HorizontalOptions="Center"
                 Clicked="SendData" 
                 BackgroundColor="SpringGreen"
                 TextColor="Red"/>
+
+        <Slider Minimum="0" 
+                Maximum="255" 
+                Value="50" 
+                x:Name="ServoA"
+                VerticalOptions="CenterAndExpand"
+                ValueChanged="MoveServo" />
+
 
         <!-- BorderColor="OrangeRed"/> -->
         
